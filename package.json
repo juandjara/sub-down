@@ -1,0 +1,17 @@
+{
+  "name": "sub-down",
+  "version": "1.0.0",
+  "description": "downloads subtitles by serie name",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "author": "fuken",
+  "license": "MIT",
+  "dependencies": {
+    "subtitler": "latest",
+    "express":   "latest",
+    "cors":      "latest"
+  }
+}
