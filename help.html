@@ -1,56 +1,56 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-    <title></title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        *{
-           font-family: Helvetica, Verdana, sans-serif;
-        }
-        h1{
-            text-align: center;
-        }
-        @media(min-width: 768px){
-            body{
-                width: 70%;
-                position: relative;
-                left: 15%;
-            }
-        }
-        pre{
-            padding: 15px;
-            background: #ddd;
-            border: 1px solid darkgrey;
-            border-radius: 10px;
-            font-size: 20px;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            display: block;
-            font-family: monospace;
-            margin: 1em 0px 1em;
-        }
-    </style>
+  <title></title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      font-family: Helvetica, Verdana, sans-serif;
+    }
+    
+    h1 {
+      text-align: center;
+    }
+    
+    @media(min-width: 768px) {
+      body {
+        width: 70%;
+        position: relative;
+        left: 15%;
+      }
+    }
+    
+    pre {
+      padding: 15px;
+      background: #ddd;
+      border: 1px solid darkgrey;
+      border-radius: 10px;
+      font-size: 20px;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      display: block;
+      font-family: monospace;
+      margin: 1em 0px 1em;
+    }
+  </style>
 </head>
+
 <body>
-    <h1>Subtitler-API Help</h1>
-    <p>
-        <strong>Subtitler-API</strong> is an API for searching in
-        <a href="http://opensubtitles.org">OpenSubtitles</a> made by
-        <a href="http://fuken.xyz"><em>fuken</em></a> using 
-        <a href="https://www.npmjs.com/package/subtitler">node-subtitler</a> by divhide.
-        <br><br>
-        You can search subtitles for series with <em>/search</em>.
-        You can indicate a text string for <strong>query</strong>ing in the database,
-        an <strong>imdb id</strong>, an <strong>episode</strong> number, a <strong>season</strong> number, a <strong>limit</strong> to the number of results that are displayed and a <strong>lang</strong>uage for the subtitles. Default language is spanish. See <a href="https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes">this wikipedia article</a> for more info about the language codes.
-        <br>
-        If a imdbid is indicated, query is ignored.
-        If a query is indicated, imdbid is ignored
-        (imdb_id has higher preference).
-        <br><br>
-        Examples: <br>
-    </p>
-    <pre>/search?imdbid=111111&season=3&episode=9&limit=1</pre>
-    <pre>/search?query=game of thrones&season=1&episode=1&limit=1&lang=eng</pre>
+  <h1>Subtitler-API Help</h1>
+  <p>
+    <strong>Subtitler-API</strong> is an API for searching in
+    <a href="https://opensubtitles.org">OpenSubtitles</a> made by
+    <a href="https://fuken.xyz"><em>fuken</em></a> using
+    <a href="https://www.npmjs.com/package/opensubtitles-universal-api">
+      opensubtitles-universal-api    
+    </a>
+    <br><br>
+    Example: 
+    <br>
+  </p>
+  <pre>/search?imdbid=tt2575988&season=3&episode=9&limit=1</pre>
 </body>
+
 </html>

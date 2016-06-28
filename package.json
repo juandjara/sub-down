@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "downloads subtitles by serie name",
   "main": "server.js",
+  "repository": "https://github.com/juandjara/palomitas-subtitle-search",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js"
@@ -10,8 +11,8 @@
   "author": "fuken",
   "license": "MIT",
   "dependencies": {
-    "subtitler": "latest",
-    "express":   "latest",
-    "cors":      "latest"
+    "cors": "^2.7.1",
+    "express": "^4.14.0",
+    "opensubtitles-universal-api": "^1.1.0"
   }
 }
