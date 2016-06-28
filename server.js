@@ -31,7 +31,7 @@ app.get('/search', function (req, res) {
   var episode = req.query.episode;
   
   if(!(imdbid && season && episode)){
-    return res.status(400).send("Bad request");
+    return res.status(400).send("Bad request. Missing parameters");
   }
 
   search(imdbid, season, episode).then(onSearchSuccess, onSearchError);
