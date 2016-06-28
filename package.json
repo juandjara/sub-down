@@ -6,7 +6,7 @@
   "repository": "https://github.com/juandjara/palomitas-subtitle-search",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "./node_modules/.bin/nodemon server.js"
   },
   "author": "fuken",
   "license": "MIT",
