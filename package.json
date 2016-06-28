@@ -1,18 +1,19 @@
 {
   "name": "sub-down",
   "version": "1.0.0",
-  "description": "downloads subtitles by serie name",
+  "description": "open subtitles api wrapped in a express server",
   "main": "server.js",
   "repository": "https://github.com/juandjara/palomitas-subtitle-search",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "fuken",
+  "author": "juandjara",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.7.1",
     "express": "^4.14.0",
+    "express-favicon": "^1.0.1",
     "opensubtitles-universal-api": "^1.1.0"
   }
 }

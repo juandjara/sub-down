@@ -1,8 +1,9 @@
 var express = require('express');
-var app = express();
+var favicon = require('express-favicon');
+var app  = express();
 var cors = require('cors');
 var path = require('path');
-var OpenSubs  = require("opensubtitles-universal-api")
+var OpenSubs = require('opensubtitles-universal-api');
 
 function login() {
   return subsapi.login().then(function (token) {
@@ -24,10 +25,6 @@ function search(imdbid, season, episode){
 app.set('json spaces', 2);
 app.use(cors());
 
-app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, 'help.html'));
-});
-
 app.get('/search', function (req, res) {
   var imdbid = req.query.imdbid;
   var season = req.query.season;
@@ -42,6 +39,9 @@ app.get('/search', function (req, res) {
     res.json({ status: 'error', error: err });
   }
 });
+
+app.use(favicon(__dirname + '/static/favicon.ico'));
+app.use(express.static("static"));
 
 var server = app.listen(process.env.PORT || 4000, function () {
   var host = server.address().address;

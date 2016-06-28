@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Sub-Down</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="open subtitles api wrapped in a express server">
+    <meta name="author" content="juandjara">
+    <style>
+      * {
+        font-family: Helvetica, Verdana, sans-serif;
+      }
+      
+      body {
+        text-align: center;
+      }
+      @media(min-width: 768px) {
+        body {
+          width: 70%;
+          position: relative;
+          left: 15%;
+        }
+      }
+      pre {
+        padding: 15px;
+        background: #ddd;
+        border: 1px solid darkgrey;
+        border-radius: 10px;
+        font-size: 20px;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        display: block;
+        font-family: monospace;
+        margin: 1em 0px 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Sub-Down</h1>
+    <p>
+      <strong>Sub-Down</strong> is a JSON API wrapper for the XML
+      <a href="https://opensubtitles.org">OpenSubtitles</a> API made by
+      <a href="https://fuken.xyz"><em>fuken</em></a> using
+      <a href="https://www.npmjs.com/package/opensubtitles-universal-api">
+        opensubtitles-universal-api</a>. Example: 
+      <br>
+    </p>
+    <pre>/search?imdbid=tt2575988&season=3&episode=9&limit=1</pre>
+    <p>Powered by <img src="opensubtitles.png" alt="OpenSubtitles"></p>
+  </body>
+</html>
