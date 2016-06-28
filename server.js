@@ -40,7 +40,7 @@ app.get('/search', function (req, res) {
     res.json(results);
   }
   function onSearchError(err) {
-    res.json({ status: 'error', error: err });
+    throw err;
   }
 });
 
