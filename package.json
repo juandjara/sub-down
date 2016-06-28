@@ -6,7 +6,7 @@
   "repository": "https://github.com/juandjara/palomitas-subtitle-search",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "./node_modules/.bin/nodemon server.js"
+    "start": "node server.js"
   },
   "author": "fuken",
   "license": "MIT",
@@ -14,8 +14,5 @@
     "cors": "^2.7.1",
     "express": "^4.14.0",
     "opensubtitles-universal-api": "^1.1.0"
-  },
-  "devDependencies": {
-    "nodemon": "^1.9.2"
   }
 }
