@@ -52,22 +52,36 @@ app.get('/search-convert', function (req, res) {
   var season = req.query.season;
   var episode = req.query.episode;
   var lang    = req.query.lang;
+  var index   = req.query.index;
   
   if(!(imdbid && season && episode && lang)){
-    return res.status(400).send("Bad request. Missing parameters");
+    return res.status(400).send("400 Bad request. Missing parameters");
   }
 
   search(imdbid, season, episode).then(onSearchSuccess, onSearchError);
 
   function onSearchSuccess(results) {
     if(!results){
-      return res.status(404).send("Not found");
+      return res.status(404).send("404 Subtitles not found");
     }else{
-      var subs_data = results[lang][0];
-      got(subs_data.url, { encoding: null })
+      var subs_data = results[lang];
+      if(!subs_data){ 
+        return res.status(404).send("404 Subtitles not found for lang "+lang);
+      }
+
+      index = index || 0; // default index is 0 if no index was passed in the url
+      index = parseInt(index, 10);
+      var sub_data = subs_data[index];
+      if(!sub_data){
+        return res.status(404).send("404 Subtitles not found for index "+req.query.index);        
+      }
+
+      got(sub_data.url, { encoding: null })
         .then(function(srt){
           srt2vtt(srt.body, function(err, vtt){
             if(err) throw new Error(err);
+
+            res.type("text/vtt");
             res.send(vtt);
           })
         });
