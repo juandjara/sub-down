@@ -1,12 +1,13 @@
-var express = require('express');
-var favicon = require('express-favicon');
-var app  = express();
-var cors = require('cors');
-var path = require('path');
+var express  = require('express');
+var favicon  = require('express-favicon');
+var app      = express();
+var cors     = require('cors');
+var path     = require('path');
 var OpenSubs = require('opensubtitles-universal-api');
-var got = require("got");
-var srt2vtt = require("srt2vtt");
-var fs = require("fs");
+var got      = require("got");
+var srt2vtt  = require("srt2vtt");
+var fs       = require("fs");
+var url      = require("url");
 
 function login() {
   return subsapi.login().then(function (token) {
@@ -39,7 +40,27 @@ app.get('/search', function (req, res) {
 
   search(imdbid, season, episode).then(onSearchSuccess, onSearchError);
 
+  function getConvertLink(imdbid, episode, season, lang, index){
+    return url.format({
+      protocol: req.protocol,
+      host:     req.get('host'),
+      pathname: 'convert',
+      query: { imdbid, episode, season, lang, index }
+    });
+  }
+
   function onSearchSuccess(results) {
+    Object.keys(results).forEach(function (lang){
+      results[lang] = results[lang].map(function(subs, index){
+        var vtt = getConvertLink(imdbid, episode, season, lang, index);
+        subs.links = {
+          vtt: vtt,
+          srt: subs.url
+        }
+        delete subs.url;
+        return subs;
+      });
+    });
     res.json(results);
   }
   function onSearchError(err) {
@@ -47,7 +68,7 @@ app.get('/search', function (req, res) {
   }
 });
 
-app.get('/search-convert', function (req, res) {
+app.get('/convert', function (req, res) {
   var imdbid = req.query.imdbid;
   var season = req.query.season;
   var episode = req.query.episode;
@@ -69,7 +90,7 @@ app.get('/search-convert', function (req, res) {
         return res.status(404).send("404 Subtitles not found for lang "+lang);
       }
 
-      index = index || 0; // default index is 0 if no index was passed in the url
+      index = index || 0; // default index is 0 if no index Fas passed in the url
       index = parseInt(index, 10);
       var sub_data = subs_data[index];
       if(!sub_data){
