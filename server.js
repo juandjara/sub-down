@@ -42,7 +42,6 @@ app.get('/search', function (req, res) {
 
   function getConvertLink(imdbid, episode, season, lang, index){
     return url.format({
-      protocol: req.protocol,
       host:     req.get('host'),
       pathname: 'convert',
       query: { imdbid, episode, season, lang, index }
