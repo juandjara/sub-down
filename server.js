@@ -8,9 +8,13 @@ var got      = require("got");
 var srt2vtt  = require("srt2vtt");
 var fs       = require("fs");
 var url      = require("url");
+var gzip     = require("compression");
+
+var osToken = null;
 
 function login() {
   return subsapi.login().then(function (token) {
+    osToken = token;
     return token;
   }, function (err) {
     console.error('There was an error in login: \n' + err);
@@ -28,6 +32,7 @@ function search(imdbid, season, episode){
 
 app.set('json spaces', 2);
 app.use(cors());
+app.use(gzip());
 
 app.get('/search', function (req, res) {
   var imdbid = req.query.imdbid;
@@ -49,8 +54,8 @@ app.get('/search', function (req, res) {
   }
 
   function onSearchSuccess(results) {
-    Object.keys(results).forEach(function (lang){
-      results[lang] = results[lang].map(function(subs, index){
+    var mapped = Object.keys(results).map(function (lang){
+      return results[lang].map(function(subs, index){
         var vtt = getConvertLink(imdbid, episode, season, lang, index);
         subs.links = {
           vtt: vtt,
@@ -60,7 +65,7 @@ app.get('/search', function (req, res) {
         return subs;
       });
     });
-    res.json(results);
+    res.json(mapped);
   }
   function onSearchError(err) {
     throw err;
