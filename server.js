@@ -31,6 +31,8 @@ app.get('/search', function (req, res) {
     return res.status(400).send("Bad request. Missing parameters");
   }
 
+  console.log("search: start");  
+  var startTime = Date.now();
   search(imdbid, season, episode).then(onSearchSuccess, onSearchError);
 
   function getConvertLink(imdbid, episode, season, lang, index){
@@ -42,8 +44,11 @@ app.get('/search', function (req, res) {
   }
 
   function onSearchSuccess(results) {
-    var mapped = Object.keys(results).map(function (lang){
-      return results[lang].map(function(subs, index){
+    var endTime = Date.now();
+    console.log("search: finished");
+    console.log("search: it took "+(endTime-startTime)+" ms");
+    Object.keys(results).forEach(function (lang){
+      results[lang] = results[lang].map(function(subs, index){
         var vtt = getConvertLink(imdbid, episode, season, lang, index);
         subs.links = {
           vtt: vtt,
