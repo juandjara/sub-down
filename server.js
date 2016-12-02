@@ -2,24 +2,12 @@ var express  = require('express');
 var favicon  = require('express-favicon');
 var app      = express();
 var cors     = require('cors');
-var path     = require('path');
 var OpenSubs = require('opensubtitles-universal-api');
 var got      = require("got");
 var srt2vtt  = require("srt2vtt");
-var fs       = require("fs");
 var url      = require("url");
 var gzip     = require("compression");
 
-var osToken = null;
-
-function login() {
-  return subsapi.login().then(function (token) {
-    osToken = token;
-    return token;
-  }, function (err) {
-    console.error('There was an error in login: \n' + err);
-  });
-}
 
 function search(imdbid, season, episode){
   var UA  = "NodeOpensubtitles v0.0.1";
