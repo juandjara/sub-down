@@ -7,7 +7,7 @@ var got      = require("got");
 var srt2vtt  = require("srt2vtt");
 var url      = require("url");
 var gzip     = require("compression");
-
+var lodash   = require("lodash");
 
 function search(imdbid, season, episode){
   var UA  = "NodeOpensubtitles v0.0.1";
@@ -47,8 +47,10 @@ app.get('/search', function (req, res) {
     var endTime = Date.now();
     console.log("search: finished");
     console.log("search: it took "+(endTime-startTime)+" ms");
-    Object.keys(results).forEach(function (lang){
-      results[lang] = results[lang].map(function(subs, index){
+    var keys   = Object.keys(results); 
+    var values = keys.map(function (lang){
+      var value = results[lang];
+      return value.map(function(subs, index){
         var vtt = getConvertLink(imdbid, episode, season, lang, index);
         subs.links = {
           vtt: vtt,
@@ -58,6 +60,7 @@ app.get('/search', function (req, res) {
         return subs;
       });
     });
+    var mapped = lodash.zipObject(keys, values);
     res.json(mapped);
   }
   function onSearchError(err) {
