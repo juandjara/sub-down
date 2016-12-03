@@ -52,11 +52,14 @@ app.get('/search', function (req, res) {
       var value = results[lang];
       return value.map(function(subs, index){
         var vtt = getConvertLink(imdbid, episode, season, lang, index);
-        subs.links = {
+        subs.name = subs.releaseFilename;
+	subs.links = {
           vtt: vtt,
           srt: subs.url
         }
         delete subs.url;
+	delete subs.releaseFilename;
+	delete subs.subFilename;
         return subs;
       });
     });
