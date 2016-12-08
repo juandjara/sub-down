@@ -26,7 +26,12 @@ app.get('/search', function (req, res) {
   var imdbid = req.query.imdbid;
   var season = req.query.season;
   var episode = req.query.episode;
-  
+  var host = req.get("host");
+  var hostLastChar = host.slice(-1);
+  if (hostLastChar !== "/") {
+    host += "/";
+  }
+
   if(!(imdbid && season && episode)){
     return res.status(400).send("Bad request. Missing parameters");
   }
@@ -35,9 +40,9 @@ app.get('/search', function (req, res) {
   var startTime = Date.now();
   search(imdbid, season, episode).then(onSearchSuccess, onSearchError);
 
-  function getConvertLink(imdbid, episode, season, lang, index){
+  function getConvertLink(host, imdbid, episode, season, lang, index){
     return url.format({
-      host:     req.get('host'),
+      host:     host,
       pathname: 'convert',
       query: { imdbid, episode, season, lang, index }
     });
