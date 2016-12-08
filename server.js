@@ -56,7 +56,7 @@ app.get('/search', function (req, res) {
     var values = keys.map(function (lang){
       var value = results[lang];
       return value.map(function(subs, index){
-        var vtt = getConvertLink(imdbid, episode, season, lang, index);
+        var vtt = getConvertLink(host, imdbid, episode, season, lang, index);
         subs.name = subs.releaseFilename;
 	subs.links = {
           vtt: vtt,
