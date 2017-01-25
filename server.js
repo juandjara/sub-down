@@ -8,6 +8,7 @@ var srt2vtt  = require("srt2vtt");
 var url      = require("url");
 var gzip     = require("compression");
 var lodash   = require("lodash");
+var apicache = require("apicache");
 
 function search(imdbid, season, episode){
   var UA  = "NodeOpensubtitles v0.0.1";
@@ -22,7 +23,7 @@ app.set('json spaces', 2);
 app.use(cors());
 app.use(gzip());
 
-app.get('/search', function (req, res) {
+app.get('/search', apicache.middleware('2 hours'),  function (req, res) {
   var imdbid = req.query.imdbid;
   var season = req.query.season;
   var episode = req.query.episode;
@@ -58,13 +59,13 @@ app.get('/search', function (req, res) {
       return value.map(function(subs, index){
         var vtt = getConvertLink(host, imdbid, episode, season, lang, index);
         subs.name = subs.releaseFilename;
-	subs.links = {
+	      subs.links = {
           vtt: vtt,
           srt: subs.url
         }
         delete subs.url;
-	delete subs.releaseFilename;
-	delete subs.subFilename;
+	      delete subs.releaseFilename;
+	      delete subs.subFilename;
         return subs;
       });
     });
