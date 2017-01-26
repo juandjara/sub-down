@@ -77,7 +77,7 @@ app.get('/search', apicache.middleware('2 hours'),  function (req, res) {
   }
 });
 
-app.get('/convert', function (req, res) {
+app.get('/convert', apicache.middleware('2 hours'), function (req, res) {
   var imdbid = req.query.imdbid;
   var season = req.query.season;
   var episode = req.query.episode;
