@@ -46,8 +46,9 @@ function subtitleTransform(results, req) {
 app.set('json spaces', 2);
 app.use(cors());
 app.use(gzip());
+const cache = apicache.middleware('2 hours');
 
-app.get('/search', apicache.middleware('2 hours'),  function (req, res) {
+app.get('/search', cache, (req, res) => {
   const { imdbid, season, episode } = req.query;
   const allParamsPresent = imdbid && season && episode;
   if(!allParamsPresent){
@@ -65,7 +66,7 @@ app.get('/search', apicache.middleware('2 hours'),  function (req, res) {
   }, err => { throw new Error(err); });
 });
 
-app.get('/convert', apicache.middleware('2 hours'), function (req, res) {
+app.get('/convert', cache, (req, res) => {
   const { imdbid, season, episode, lang, index } = req.query;
   const allParamsPresent = imdbid && season && episode && lang;
   if(!allParamsPresent){
