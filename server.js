@@ -17,29 +17,23 @@ function search(imdbid, season, episode){
   return api.search(query);
 }
 
-function getConvertLink(imdbid, episode, season, lang, index){
-  const host = req.get("host");
-  if (host.slice(-1) !== "/") {
-    host += "/";
-  }
+function getConvertLink(req, lang, index){
+  const { imdbid, season, episode } = req.query;
   return url.format({
-    host,
+    host: req.get("host"),
     pathname: 'convert',
     query: { imdbid, episode, season, lang, index }
   });
 }
 
-function subtitleTransform(subs, query) {
-  const { imdbid, season, episode } = query;  
+function subtitleTransform(results, req) {
   const keys = Object.keys(results); 
   const values = keys.map((lang) => {
     return results[lang].map((subs, index) => {
-      const vtt = getConvertLink(imdbid, season, episode, lang, index);
+      const srt = subs.url;
+      const vtt = getConvertLink(req, lang, index);
       subs.name = subs.releaseFilename;
-      subs.links = {
-        vtt: vtt,
-        srt: subs.url
-      }
+      subs.links = { vtt, srt };
       delete subs.url;
       delete subs.releaseFilename;
       delete subs.subFilename;
@@ -66,7 +60,7 @@ app.get('/search', apicache.middleware('2 hours'),  function (req, res) {
   search(imdbid, season, episode).then(results => {
     const endTime = Date.now();
     console.log(`Subtitle search took ${endTime-startTime} ms`);
-    const subs = subtitleTransform(results, req.query);
+    const subs = subtitleTransform(results, req);
     res.json(subs);
   }, err => { throw new Error(err); });
 });
