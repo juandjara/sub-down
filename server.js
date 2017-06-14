@@ -75,22 +75,11 @@ app.get('/convert', apicache.middleware('2 hours'), function (req, res) {
   }
 
   search(imdbid, season, episode).then(results => {
-    if(!results){
+    const idx = parseInt(index || 0);
+    if(!results || !results[lang] || !results[lang][idx]){
       return res
         .status(404)
         .send("404 Subtitles not found");
-    }
-    if(!results[lang]){ 
-      return res
-        .status(404)
-        .send("404 Subtitles not found for lang "+lang);
-    }
-    // default index is 0 if no index Fas passed in the url
-    index = parseInt(index || 0);
-    if(!results[lang][index]){
-      return res
-        .status(404)
-        .send("404 Subtitles not found for index "+req.query.index);        
     }
 
     got(results[lang][index].url, { encoding: null })
