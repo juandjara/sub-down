@@ -1,22 +1,52 @@
-var express  = require('express');
-var favicon  = require('express-favicon');
-var app      = express();
-var cors     = require('cors');
-var OpenSubs = require('opensubtitles-universal-api');
-var got      = require("got");
-var srt2vtt  = require("srt2vtt");
-var url      = require("url");
-var gzip     = require("compression");
-var lodash   = require("lodash");
-var apicache = require("apicache");
+const express = require('express');
+const app = express();
+const favicon = require('express-favicon');
+const cors = require('cors');
+const got = require("got");
+const url = require("url");
+const gzip = require("compression");
+const lodash = require("lodash");
+const apicache = require("apicache");
+const srt2vtt = require("srt2vtt");
+const OpenSubs = require('opensubtitles-universal-api');
 
 function search(imdbid, season, episode){
-  var UA  = "NodeOpensubtitles v0.0.1";
-  var api = new OpenSubs(UA);
-
-  var query = { imdbid:imdbid, season:season, episode:episode };
+  const api = new OpenSubs("NodeOpensubtitles v0.0.1");
+  const query = { imdbid, season, episode };
 
   return api.search(query);
+}
+
+function getConvertLink(imdbid, episode, season, lang, index){
+  const host = req.get("host");
+  if (host.slice(-1) !== "/") {
+    host += "/";
+  }
+  return url.format({
+    host,
+    pathname: 'convert',
+    query: { imdbid, episode, season, lang, index }
+  });
+}
+
+function subtitleTransform(subs, query) {
+  const { imdbid, season, episode } = query;  
+  const keys = Object.keys(results); 
+  const values = keys.map((lang) => {
+    return results[lang].map((subs, index) => {
+      const vtt = getConvertLink(imdbid, season, episode, lang, index);
+      subs.name = subs.releaseFilename;
+      subs.links = {
+        vtt: vtt,
+        srt: subs.url
+      }
+      delete subs.url;
+      delete subs.releaseFilename;
+      delete subs.subFilename;
+      return subs;
+    });
+  });
+  return lodash.zipObject(keys, values);
 }
 
 app.set('json spaces', 2);
@@ -24,110 +54,68 @@ app.use(cors());
 app.use(gzip());
 
 app.get('/search', apicache.middleware('2 hours'),  function (req, res) {
-  var imdbid = req.query.imdbid;
-  var season = req.query.season;
-  var episode = req.query.episode;
-  var host = req.get("host");
-  var hostLastChar = host.slice(-1);
-  if (hostLastChar !== "/") {
-    host += "/";
+  const { imdbid, season, episode } = req.query;
+  const allParamsPresent = imdbid && season && episode;
+  if(!allParamsPresent){
+    return res
+      .status(400)
+      .send("Bad request. Query must contain imdbid, season and episode");
   }
 
-  if(!(imdbid && season && episode)){
-    return res.status(400).send("Bad request. Missing parameters");
-  }
-
-  console.log("search: start");  
-  var startTime = Date.now();
-  search(imdbid, season, episode).then(onSearchSuccess, onSearchError);
-
-  function getConvertLink(host, imdbid, episode, season, lang, index){
-    return url.format({
-      host:     host,
-      pathname: 'convert',
-      query: { imdbid, episode, season, lang, index }
-    });
-  }
-
-  function onSearchSuccess(results) {
-    var endTime = Date.now();
-    console.log("search: finished");
-    console.log("search: it took "+(endTime-startTime)+" ms");
-    var keys   = Object.keys(results); 
-    var values = keys.map(function (lang){
-      var value = results[lang];
-      return value.map(function(subs, index){
-        var vtt = getConvertLink(host, imdbid, episode, season, lang, index);
-        subs.name = subs.releaseFilename;
-	      subs.links = {
-          vtt: vtt,
-          srt: subs.url
-        }
-        delete subs.url;
-	      delete subs.releaseFilename;
-	      delete subs.subFilename;
-        return subs;
-      });
-    });
-    var mapped = lodash.zipObject(keys, values);
-    res.json(mapped);
-  }
-  function onSearchError(err) {
-    throw err;
-  }
+  const startTime = Date.now();
+  search(imdbid, season, episode).then(results => {
+    const endTime = Date.now();
+    console.log(`Subtitle search took ${endTime-startTime} ms`);
+    const subs = subtitleTransform(results, req.query);
+    res.json(subs);
+  }, err => { throw new Error(err); });
 });
 
 app.get('/convert', apicache.middleware('2 hours'), function (req, res) {
-  var imdbid = req.query.imdbid;
-  var season = req.query.season;
-  var episode = req.query.episode;
-  var lang    = req.query.lang;
-  var index   = req.query.index;
-  
-  if(!(imdbid && season && episode && lang)){
-    return res.status(400).send("400 Bad request. Missing parameters");
+  const { imdbid, season, episode, lang, index } = req.query;
+  const allParamsPresent = imdbid && season && episode && lang;
+  if(!allParamsPresent){
+    return res
+      .status(400)
+      .send("Bad request. Query must contain imdbid, lang, season and episode");
   }
 
-  search(imdbid, season, episode).then(onSearchSuccess, onSearchError);
-
-  function onSearchSuccess(results) {
+  search(imdbid, season, episode).then(results => {
     if(!results){
-      return res.status(404).send("404 Subtitles not found");
-    }else{
-      var subs_data = results[lang];
-      if(!subs_data){ 
-        return res.status(404).send("404 Subtitles not found for lang "+lang);
-      }
-
-      index = index || 0; // default index is 0 if no index Fas passed in the url
-      index = parseInt(index, 10);
-      var sub_data = subs_data[index];
-      if(!sub_data){
-        return res.status(404).send("404 Subtitles not found for index "+req.query.index);        
-      }
-
-      got(sub_data.url, { encoding: null })
-        .then(function(srt){
-          srt2vtt(srt.body, function(err, vtt){
-            if(err) throw new Error(err);
-
-            res.type("text/vtt");
-            res.send(vtt);
-          })
-        });
+      return res
+        .status(404)
+        .send("404 Subtitles not found");
     }
-  }
-  function onSearchError(err) {
-    throw err;
-  }
+    if(!results[lang]){ 
+      return res
+        .status(404)
+        .send("404 Subtitles not found for lang "+lang);
+    }
+    // default index is 0 if no index Fas passed in the url
+    index = parseInt(index || 0);
+    if(!results[lang][index]){
+      return res
+        .status(404)
+        .send("404 Subtitles not found for index "+req.query.index);        
+    }
+
+    got(results[lang][index].url, { encoding: null })
+    .then(function(srt){
+      srt2vtt(srt.body, function(err, vtt){
+        if(err) throw new Error(err);
+        res.type("text/vtt");
+        res.send(vtt);
+      })
+    });
+  }, err => { throw new Error(err) });
 })
 
 app.use(favicon(__dirname + '/static/favicon.ico'));
 app.use(express.static("static"));
 
-var server = app.listen(process.env.PORT || 4000, function () {
-  var host = server.address().address;
-  var port = server.address().port;
+const server = app.listen(process.env.PORT || 4000, () => {
+  const host = server.address().address;
+  const port = server.address().port;
 
   console.log('app listening at http://%s:%s', host, port);
 });
