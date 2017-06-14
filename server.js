@@ -108,7 +108,7 @@ app.get('/textsearch', (req, res) => {
   textSearch(query, req)
   .then(data => {
     const subs = lodash.groupBy(data, 'langcode')
-    subtitleTransform(subs, req)
+    return subtitleTransform(subs, req)
   })
   .then(subs => res.json(subs))
 })
