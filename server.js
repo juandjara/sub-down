@@ -11,12 +11,12 @@ const srt2vtt = require("srt2vtt");
 const OpenSubs = require('opensubtitles-universal-api');
 const OpenSubs2 = require('opensubtitles-api')
 
-function textSearch(query, req) {
+function textSearch(query) {
   const OS = new OpenSubs2("NodeOpensubtitles v0.0.1");
   return OS.search({
     query,
     extensions: ['srt','vtt']
-  }).then(res => subtitleTransform(lodash.groupBy(res, 'langcode'), req))
+  })
 }
 
 function search(imdbid, season, episode){
@@ -106,6 +106,10 @@ app.get('/convert', cache, (req, res) => {
 app.get('/textsearch', (req, res) => {
   const query = req.query.q;
   textSearch(query, req)
+  .then(data => {
+    const subs = lodash.groupBy(data, 'langcode')
+    subtitleTransform(subs, req)
+  })
   .then(subs => res.json(subs))
 })
 
