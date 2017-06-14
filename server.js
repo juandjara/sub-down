@@ -9,6 +9,15 @@ const lodash = require("lodash");
 const apicache = require("apicache");
 const srt2vtt = require("srt2vtt");
 const OpenSubs = require('opensubtitles-universal-api');
+const OpenSubs2 = require('opensubtitles-api')
+
+function textSearch(query, req) {
+  const OS = new OpenSubs2("NodeOpensubtitles v0.0.1");
+  return OS.search({
+    query,
+    extensions: ['srt','vtt']
+  }).then(res => subtitleTransform(lodash.groupBy(res, 'langcode'), req))
+}
 
 function search(imdbid, season, episode){
   const api = new OpenSubs("NodeOpensubtitles v0.0.1");
@@ -92,6 +101,12 @@ app.get('/convert', cache, (req, res) => {
       })
     });
   }, err => { throw new Error(err) });
+})
+
+app.get('/textsearch', (req, res) => {
+  const query = req.query.q;
+  textSearch(query, req)
+  .then(subs => res.json(subs))
 })
 
 app.use(favicon(__dirname + '/static/favicon.ico'));
