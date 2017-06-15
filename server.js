@@ -29,7 +29,7 @@ function search(imdbid, season, episode){
 function getConvertLink(req, lang, index){
   const { imdbid, season, episode } = req.query;
   return url.format({
-    host: req.get("host"),
+    host: "//"+req.get("host")+"/",
     pathname: 'convert',
     query: { imdbid, episode, season, lang, index }
   });
