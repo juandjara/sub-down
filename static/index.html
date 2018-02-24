@@ -36,16 +36,27 @@
     </style>
   </head>
   <body>
-    <h1>Sub-Down</h1>
+    <h1 style="font-weight: 300">Sub-Down</h1>
     <p>
       <strong>Sub-Down</strong> is a JSON API wrapper for the XML
       <a href="https://opensubtitles.org">OpenSubtitles</a> API made by
       <a href="https://fuken.xyz"><em>fuken</em></a> using
-      <a href="https://www.npmjs.com/package/opensubtitles-universal-api">
-        opensubtitles-universal-api</a>. Example: 
-      <br>
+      <a href="https://www.npmjs.com/package/opensubtitles-api">opensubtitles-api</a>. 
     </p>
+    <p style="margin-top: 50px">Usage examples:</p>
     <pre>https://sub-down.fuken.xyz/search?imdbid=tt2575988&season=3&episode=9</pre>
-    <p>Powered by <img src="opensubtitles.png" alt="OpenSubtitles"></p>
+    <pre>https://sub-down.fuken.xyz/convert?imdbid=tt2575988&season=3&episode=9&lang=es</pre>
+    <pre>https://sub-down.fuken.xyz/textsearch?q=community</pre>    
+    <p style="margin-top: 50px">Powered by <img src="opensubtitles.png" alt="OpenSubtitles"></p>
   </body>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const nodes = document.querySelectorAll('pre');
+      const localUrl = `${location.protocol}//${location.host}${location.pathname}`;
+      const prodUrl = 'https://sub-down.fuken.xyz/'
+      Array.from(nodes).forEach(node => {
+        node.textContent = node.textContent.replace(prodUrl, localUrl);
+      })
+    })
+  </script>
 </html>
