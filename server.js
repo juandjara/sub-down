@@ -11,7 +11,14 @@ const utils    = require('./utils')
 app.set('json spaces', 2);
 app.use(cors());
 app.use(gzip());
-const cache = apicache.middleware('2 hours');
+const cache = apicache.middleware(
+  '2 hours',
+  (req, res) => res.statusCode < 400
+);
+
+app.get('/cache', (req, res) => {
+  res.json(apicache.getIndex());
+})
 
 app.get('/search', cache, (req, res) => {
   if(!req.query.imdbid && 
