@@ -1,14 +1,12 @@
-const OSApi  = require('opensubtitles-api')
-const api    = new OSApi("NodeOpensubtitles v0.0.1");
-const lodash = require('lodash');
-const url    = require("url");
+const OSApi = require('opensubtitles-api')
+const api = new OSApi('Popcorn Time NodeJS');
+const url = require('url');
 
 exports.api = api;
 exports.subtitleTransform = function (results, host, query) {
-  const keys = Object.keys(results)
-  const values = keys.map(lang => results[lang])
-  .map(group => {
-    return [group].map((subs, index) => {
+  return Object.fromEntries(Object.entries(results)
+    .map(group => {
+      const [key, subs] = group
       const {imdbid, season, episode} = query;
       const lang = subs.langcode;
       subs.links = { 
@@ -20,8 +18,6 @@ exports.subtitleTransform = function (results, host, query) {
         })
       };
       delete subs.url;
-      return subs;
-    });
-  });
-  return lodash.zipObject(keys, values);
+      return [key, [subs]];
+    }));
 }
