@@ -1,0 +1,19 @@
+version: "3"
+services:
+  api:
+    container_name: sub-down-api
+    build: .
+    restart: always
+    labels:
+      - traefik.frontend.rule=Host:sub-down.fuken.xyz
+      - traefik.port=4000
+    networks:
+      - web
+    ports:
+      - 4000:4000
+    environment:
+      - NODE_ENV=production
+
+networks:
+  web:
+    external: true
